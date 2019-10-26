@@ -1,0 +1,9 @@
+[package]
+name    = "cpptoml"
+version = "0.5.0"
+description = "cpptoml is a header-only library for parsing TOML use std::optional version"
+git = "https://github.com/injae/cpptoml.git"
+
+[[lib]]
+name   = "cpptoml"
+type   = "header-only"
