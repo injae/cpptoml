@@ -1662,7 +1662,7 @@ std::shared_ptr<table> make_table()
     return std::make_shared<make_shared_enabler>();
 }
 
-std::shared_ptr<table> make_inner_table(cosnt std::string& key)
+std::shared_ptr<table> make_inner_table(const std::string& key)
 {
     auto stream = std::stringstream{ "["+key+"]"};
     return parser{ stream }.parse();
