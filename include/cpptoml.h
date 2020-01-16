@@ -1665,7 +1665,7 @@ std::shared_ptr<table> make_table()
 std::shared_ptr<table> make_inner_table(cosnt std::string& key)
 {
     auto stream = std::stringstream{ "["+key+"]"};
-    return parser{ s }.parse();
+    return parser{ stream }.parse();
 }
 
 namespace detail
