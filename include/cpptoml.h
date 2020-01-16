@@ -3591,6 +3591,12 @@ class toml_writer
     bool has_naked_endline_;
 };
 
+std::shared_ptr<table> make_inner_table(const std::string& key)
+{
+    auto stream = std::stringstream{ "["+key+"]"};
+    return parser{ stream }.parse();
+}
+
 inline std::ostream& operator<<(std::ostream& stream, const base& b)
 {
     toml_writer writer{stream};
@@ -3627,11 +3633,6 @@ inline std::ostream& operator<<(std::ostream& stream, const array& a)
     return stream;
 }
 
-std::shared_ptr<table> make_inner_table(const std::string& key)
-{
-    auto stream = std::stringstream{ "["+key+"]"};
-    return parser{ stream }.parse();
-}
 
 } // namespace cpptoml
 #endif // CPPTOML_H
