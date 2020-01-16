@@ -3591,7 +3591,7 @@ class toml_writer
     bool has_naked_endline_;
 };
 
-std::shared_ptr<table> make_inner_table(const std::string& key)
+inline std::shared_ptr<table> make_inner_table(const std::string& key)
 {
     auto stream = std::stringstream{ "["+key+"]"};
     return parser{ stream }.parse();
