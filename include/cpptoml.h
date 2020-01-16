@@ -1662,11 +1662,6 @@ std::shared_ptr<table> make_table()
     return std::make_shared<make_shared_enabler>();
 }
 
-std::shared_ptr<table> make_inner_table(const std::string& key)
-{
-    auto stream = std::stringstream{ "["+key+"]"};
-    return parser{ stream }.parse();
-}
 
 namespace detail
 {
@@ -3631,5 +3626,12 @@ inline std::ostream& operator<<(std::ostream& stream, const array& a)
     a.accept(writer);
     return stream;
 }
+
+std::shared_ptr<table> make_inner_table(const std::string& key)
+{
+    auto stream = std::stringstream{ "["+key+"]"};
+    return parser{ stream }.parse();
+}
+
 } // namespace cpptoml
 #endif // CPPTOML_H
