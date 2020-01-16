@@ -22,6 +22,8 @@
 #include <unordered_map>
 #include <optional>
 #include <vector>
+#include <sstream>
+
 
 #if __cplusplus > 201103L
 #define CPPTOML_DEPRECATED(reason) [[deprecated(reason)]]
@@ -1658,6 +1660,12 @@ std::shared_ptr<table> make_table()
     };
 
     return std::make_shared<make_shared_enabler>();
+}
+
+std::shared_ptr<table> make_inner_table(cosnt std::string& key)
+{
+    auto stream = std::stringstream{ "["+key+"]"};
+    return parser{ s }.parse();
 }
 
 namespace detail
