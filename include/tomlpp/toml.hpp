@@ -1,11 +1,11 @@
 /**
- * @file cpptoml.h
+ * @file toml.h
  * @author Chase Geigle
  * @date May 2013
  */
 
-#ifndef CPPTOML_H
-#define CPPTOML_H
+#ifndef __TOML_H__
+#define __TOML_H__
 
 #include <algorithm>
 #include <cassert>
@@ -39,7 +39,7 @@
 #endif
 #endif
 
-namespace cpptoml
+namespace toml
 {
 class writer; // forward declaration
 class base;   // forward declaration
@@ -574,7 +574,7 @@ class value : public base
 
     template <class U>
     friend std::shared_ptr<typename value_traits<U>::type>
-    cpptoml::make_value(U&& val);
+    toml::make_value(U&& val);
 
   public:
     static_assert(valid_value<T>::value, "invalid value type");
@@ -1242,10 +1242,13 @@ get_impl(const std::shared_ptr<base>& elem)
 /**
  * Represents a TOML keytable.
  */
+namespace toml::orm { class access; } // toml orm
+
 class table : public base
 {
   public:
     friend class table_array;
+    friend class toml::orm::access;
     friend std::shared_ptr<table> make_table();
 
     std::shared_ptr<base> clone() const override;

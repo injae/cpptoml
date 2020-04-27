@@ -1,9 +1,14 @@
 [package]
-name    = "cpptoml"
-version = "0.5.0"
-description = "cpptoml is a header-only library for parsing TOML use std::optional version"
+name    = "tomlpp"
+version = "0.6.0"
+description = "tomlpp is a c++17 header-only library for parsing TOML forked cpptoml and can use orm and std::optional"
 git = "https://github.com/injae/cpptoml.git"
 
-[[lib]]
-name   = "cpptoml"
+[lib]
+name   = "tomlpp"
 type   = "header-only"
+
+#[[bin]]
+#    name = "ormtest"
+#    source = ["test/test.cpp"]
+#    install =false
