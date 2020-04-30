@@ -1,0 +1,6 @@
+
+name= "hello"
+
+[deps]
+bb ="cc"
+aa ="xx"
