@@ -8,8 +8,10 @@
 #include "tomlpp/toml.hpp"
 #include <iostream>
 #include <typeinfo>
+#include <list>
 #include <variant>
 #include <functional>
+#include <algorithm>
 #include <map>
 #include <unordered_map>
 
@@ -60,6 +62,23 @@ namespace toml::orm {
         template< typename T> inline constexpr bool is_vector_v = is_vector<T>::value;
         template< typename T> using is_vector_t = typename is_vector<T>::type;
         template< typename T> using is_vector_e = typename is_vector<T>::element;
+
+        template<class T> struct is_list {
+            using type = T;
+            using element = T;
+            constexpr static bool value = false;
+        };
+
+        template<class T>
+        struct is_list<std::list<T>> {
+            using type = std::list<T>;
+            using element = T;
+            constexpr  static bool value = true;
+        };
+
+        template< typename T> inline constexpr bool is_list_v = is_list<T>::value;
+        template< typename T> using is_list_t = typename is_list<T>::type;
+        template< typename T> using is_list_e = typename is_list<T>::element;
 
         template<class T> struct is_optional {
             using type = T;
@@ -150,6 +169,12 @@ namespace toml::orm {
     };
     template< typename T> inline constexpr bool is_nested_table_v = is_nested_table<T>::value;
 
+    template<typename T>
+    struct is_list_table {
+        constexpr static bool value = detail::is_list_v<T> && std::is_base_of_v<table, detail::is_list_e<T>>;
+    };
+    template< typename T> inline constexpr bool is_list_table_v = is_list_table<T>::value;
+
     template<typename T> inline table_ptr table_or_value(base_ptr ptr, T& value) {
         if(ptr->is_value()) {
             value = get_impl<T>(ptr);
@@ -193,10 +218,25 @@ namespace toml::orm {
             }
             else if constexpr(is_nested_table_v<T>) {
                  this->for_each([&target](auto p) {
-                        auto table = target[p.first];
+                        auto& table = target[p.first];
                         auto ac = access(p.second->as_table(), p.first);
                         table.parse(ac);
-                        target[p.first] = table;
+                 });
+            }
+            else if constexpr(is_list_table_v<T>) {
+                 this->for_each([&target](auto p) {
+                        auto name = p.first;
+                        auto accs = access(p.second->as_table(), p.first);
+                        auto result = std::find_if(target.begin(), target.end(), [&name](auto it) {
+                                return it.name == name;
+                        });
+                        if(result != target->end()) {
+                            result->parse(accs);
+                        }else {
+                            detail::is_list_e<T> lt;
+                            lt.parse(accs);
+                            target->push_back(lt);
+                        }
                  });
             }
             else if constexpr(is_array_v<T>) {
@@ -258,12 +298,32 @@ namespace toml::orm {
                  if(auto tv = table_->get_table(name)) {
                     access(tv, name).for_each([&target](auto p) {
                         target = target ? std::move(target) : T();
-                        auto table = (*target)[p.first];
+                        auto& table = (*target)[p.first];
                         auto tb = p.second->is_value() ? make_table() : p.second->as_table();
                         auto accs = access(tb, p.first);
                         if(p.second->is_value()) accs.value_ = p.second;
                         table.parse(accs);
-                        (*target)[p.first] = table;
+                    });
+                 }
+            }
+            else if constexpr(is_list_table_v<T>) {
+                 if(auto tv = table_->get_table(name)) {
+                    access(tv, name).for_each([&target](auto p) {
+                        target = target ? std::move(target) : T();
+                        auto tb = p.second->is_value() ? make_table() : p.second->as_table();
+                        auto accs = access(tb, p.first);
+                        if(p.second->is_value()) accs.value_ = p.second;
+                        auto& name =  p.first;
+                        auto result = std::find_if(target->begin(), target->end(), [&name](auto it) {
+                                return it.name == name;
+                        });
+                        if(result != target->end()) {
+                            result->parse(accs);
+                        }else {
+                            detail::is_list_e<T> lt;
+                            lt.parse(accs);
+                            target->push_back(lt);
+                        }
                     });
                  }
             }

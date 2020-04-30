@@ -1,6 +1,12 @@
+#define CATCH_CONFIG_MAIN
+#include <catch2/catch.hpp>
+
 #include "tomlpp/orm.hpp"
+#include <cstdlib>
+#include <filesystem>
 
 using namespace std;
+namespace fs = std::filesystem;
 
 #define TOML_D(...) __VA_ARGS__, #__VA_ARGS__
 
@@ -62,24 +68,14 @@ struct config: public toml::orm::table {
         if(lib) {tgs->push_back(lib.value());}
     }
     string name;
-    opt<nested<dep>> deps;
+    opt<std::list<dep>> deps;
     opt<arr<int64_t>> nums;
     opt<arr<tg>> tgs;
     opt<string> tt;
 };
 
-int main() {
+TEST_CASE("Get env test", "[test env]") {
     auto conf = std::make_optional<config>();
-    toml::orm::parser(conf, "test.toml", "config");
-    //cout << conf->deps->list->empty() << endl;
-
-    for(auto& [_,x]: conf->deps.value()) {
-        cout << x.name << x.version << *x.level << endl;
-        for(auto& [y, z]: x.remains.value()) {
-            cout << y << ":" << z << " ";
-        }
-        cout << endl;
-    }
-
-    return 0;
+    auto path = fs::current_path();
+    REQUIRE((path/"../test/test.toml").lexically_normal() == "/Users/nieel/dev/cppm/libs/tomlpp/test/test.toml");
 }

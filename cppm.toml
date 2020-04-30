@@ -8,7 +8,9 @@ git = "https://github.com/injae/cpptoml.git"
 name   = "tomlpp"
 type   = "header-only"
 
-#[[bin]]
-#    name = "ormtest"
-#    source = ["test/test.cpp"]
-#    install =false
+[dev-dependencies]
+Catch2="2.9.1"
+
+[[test]]
+    name="parse_test"
+    source= ["test/test.cpp"]
