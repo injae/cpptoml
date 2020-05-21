@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
-if(NOT IS_CPPM_LOADED)
-    include(cmake/cppm_tool.cmake)
-endif()
+set(CPPM_VERSION 0.0.12)
+include(cmake/cppm_loader.cmake)
 cppm_project()
 
 project(tomlpp VERSION 0.6.0 LANGUAGES C CXX)
@@ -12,7 +11,7 @@ cppm_compiler_option(DEFAULT)
 
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-find_cppkg(Catch2 2.9.1 MODULE Catch2::Catch2)
+find_cppkg(Catch2 2.9.1  MODULE Catch2::Catch2 TYPE lib)
 endif()
 
 
